@@ -10,7 +10,7 @@ export default function ServicioTecnicoInfo() {
   return (
     <div className="bg-black text-white w-full mx-auto pt-0 px-5">
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold mb-2">Servicio Técnico Profesional</h2>
+        <h2 className="text-3xl font-bold mb-2 tracking-[-0.04em]">Servicio Técnico Profesional</h2>
         <div className="flex items-center justify-center gap-2">
           <CheckCircle className="w-5 h-5 text-green-400" />
           <p className="text-lg text-gray-300">{aboutContext.experiencia}</p>

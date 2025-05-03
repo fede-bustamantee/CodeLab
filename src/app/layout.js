@@ -1,4 +1,3 @@
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import SplashScreen from './componets/LoadingScreen';
 
@@ -16,6 +15,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
       </head>
       <body>
         <SplashScreen>{children}</SplashScreen>
