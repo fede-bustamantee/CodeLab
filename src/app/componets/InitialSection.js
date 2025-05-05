@@ -4,7 +4,7 @@ import aboutContent from "@/data/about";
 
 export default function HeroSection() {
   return (
-<div className="flex flex-col lg:flex-row items-center justify-between pt-20 bg-black mx-auto px-4 sm:px-6 md:px-8 lg:px-20">
+<div id='initial' className="flex flex-col lg:flex-row items-center justify-between pt-20 bg-black mx-auto px-4 sm:px-6 md:px-8 lg:px-20">
 <div className="lg:w-1/2 mb-6 lg:mb-2 text-center lg:text-left">
     
     <h1 className="text-4xl md:text-6xl font-extrabold mb-2 tracking-[-0.04em]">

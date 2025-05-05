@@ -8,31 +8,29 @@ export default function ServicioTecnicoInfo() {
   const [activeTab, setActiveTab] = useState("cobertura");
 
   return (
-    <div className="bg-black text-white w-full mx-auto pt-0 px-5">
-      <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold mb-2 tracking-[-0.04em]">Servicio Técnico Profesional</h2>
+    <div id="information" className="bg-black text-white w-full mx-auto pt-0 px-5 lg:px-25">
+      <div className="mb-4 text-center">
+        <h2 className="text-3xl font-extrabold mb-2 tracking-[-0.04em]">Servicio Técnico Profesional</h2>
         <div className="flex items-center justify-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-400" />
+          <CheckCircle className="w-5 h-5 text-green-400 transform -translate-y-4 md:translate-y-0" />
           <p className="text-lg text-gray-300">{aboutContext.experiencia}</p>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        {Object.keys(tabContent).map((key) => (
+      <div className="grid grid-cols-4 md:grid-cols-4 gap-4 mb-4">
+      {Object.keys(tabContent).map((key) => (
           <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2
-              ${activeTab === key ?
-                "bg-gray-800 border border-gray-700" :
-                "bg-gray-900 hover:bg-gray-800"}`}
-          >
-            <div className="w-6 h-6">
-              {tabContent[key].icon ? cloneElement(tabContent[key].icon, { className: "w-full h-full" }) : null}
-            </div>
-            <span>{tabContent[key].title}</span>
-          </button>
+          key={key}
+          onClick={() => setActiveTab(key)}
+          className={`py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2
+            ${activeTab === key ? "bg-gray-800 border border-gray-700" : "bg-gray-900 hover:bg-gray-800"}`}
+        >
+          <div className="w-6 h-6">
+            {tabContent[key].icon ? cloneElement(tabContent[key].icon, { className: "w-full h-full" }) : null}
+          </div>
+          <span className="hidden md:inline">{tabContent[key].title}</span>
+        </button>        
         ))}
       </div>
 
