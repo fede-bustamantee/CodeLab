@@ -2,10 +2,11 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import Swal from 'sweetalert2';
 
 // Configuración de limite de envíos
-const COOLDOWN_TIME = 60; // Tiempo en segundos entre envíos permitidos
-const MAX_EMAILS_PER_DAY = 2; // Máximo de correos por día desde una misma IP/dispositivo
+const COOLDOWN_TIME = 30; // Tiempo en segundos entre envíos permitidos
+const MAX_EMAILS_PER_DAY = 3; // Máximo de correos por día desde una misma IP/dispositivo
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,6 +62,13 @@ export default function ChatWidget() {
     // Verificar si se alcanzó el límite diario
     if (updatedHistory[today] && updatedHistory[today] >= MAX_EMAILS_PER_DAY) {
       setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
+      // Mostrar alerta SweetAlert2 para límite diario
+      Swal.fire({
+        icon: 'warning',
+        title: 'Límite alcanzado',
+        text: `Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`,
+        confirmButtonColor: '#3B82F6'
+      });
       return false;
     }
     
@@ -94,14 +102,33 @@ export default function ChatWidget() {
     
     // Verificar límites antes de enviar
     if (!checkRateLimits()) {
-      if (!error) {
+      if (!error && timeRemaining > 0) {
         setError(`Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`);
+        // Alerta para tiempo de espera
+        Swal.fire({
+          icon: 'info',
+          title: 'Espera un momento',
+          text: `Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`,
+          timer: timeRemaining * 1000,
+          timerProgressBar: true,
+          confirmButtonColor: '#3B82F6'
+        });
       }
       return;
     }
     
     setIsSubmitting(true);
     setError('');
+    
+    // Muestra spinner mientras se procesa
+    Swal.fire({
+      title: 'Enviando mensaje',
+      text: 'Por favor espera...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     
     // Usa variables de entorno configuradas en tu plataforma de hosting
     emailjs.send(
@@ -118,8 +145,14 @@ export default function ChatWidget() {
       // Registrar envío exitoso para limitar la tasa
       updateSubmitHistory();
       
-      // Mostrar mensaje de éxito
-      alert('¡Mensaje enviado con éxito!');
+      // Mostrar mensaje de éxito con SweetAlert2
+      Swal.fire({
+        icon: 'success',
+        title: '¡Mensaje enviado!',
+        text: 'Gracias por contactarnos. Te responderemos lo antes posible.',
+        confirmButtonColor: '#3B82F6'
+      });
+      
       setIsOpen(false);
       setEmail('');
       setFullName('');
@@ -127,6 +160,15 @@ export default function ChatWidget() {
     })
     .catch((error) => {
       console.error('Error al enviar el mensaje:', error);
+      
+      // Mostrar error con SweetAlert2
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un problema al enviar tu mensaje. Por favor intenta de nuevo más tarde.',
+        confirmButtonColor: '#3B82F6'
+      });
+      
       setError('Ocurrió un error al enviar el mensaje');
     })
     .finally(() => {
