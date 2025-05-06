@@ -12,13 +12,13 @@ export default function ServicioTecnicoInfo() {
       <div className="mb-4 text-center">
         <h2 className="text-3xl font-extrabold mb-2 tracking-[-0.04em]">Servicio Técnico Profesional</h2>
         <div className="flex items-center justify-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-400 transform -translate-y-4 md:translate-y-0" />
+          <CheckCircle className="w-5 h-5 text-green-400" />
           <p className="text-lg text-gray-300">{aboutContext.experiencia}</p>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="grid grid-cols-4 md:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-4">
       {Object.keys(tabContent).map((key) => (
           <button
           key={key}

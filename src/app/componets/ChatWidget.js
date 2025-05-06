@@ -1,12 +1,14 @@
-// componets/ChatWidget.jsx
 'use client'
 import { useState } from 'react';
 import { MessageSquare, X } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -14,11 +16,32 @@ export default function ChatWidget() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({ email, fullName });
-    // You could send this data to an API, etc.
-    alert('Form submitted!');
-    setIsOpen(false);
+    setIsSubmitting(true);
+    
+    // Usa variables de entorno configuradas en tu plataforma de hosting
+    emailjs.send(
+      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,    // Configurado en Netlify/Vercel
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,   // Configurado en Netlify/Vercel
+      {
+        name: fullName,
+        email: email,
+        message: mensaje,
+      },
+      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY     // Configurado en Netlify/Vercel
+    )
+    .then(() => {
+      alert('¡Mensaje enviado con éxito!');
+      setIsOpen(false);
+      setEmail('');
+      setFullName('');
+      setMensaje('');
+      setIsSubmitting(false);
+    })
+    .catch((error) => {
+      console.error('Error al enviar el mensaje:', error);
+      alert('Ocurrió un error al enviar el mensaje');
+      setIsSubmitting(false);
+    });
   };
 
   return (
@@ -27,8 +50,8 @@ export default function ChatWidget() {
         <div className="bg-black rounded-md shadow-lg w-80 text-white border border-gray-700">
           <div className="flex justify-between items-center p-4 border-b border-gray-700">
             <div className="text-sm">
-              <h3 className="font-semibold">Por correo electronico tambien puede contactarnos</h3>
-              <p className="text-gray-400 text-xs">Ayudanos a saber tu problema o consulta.</p>
+              <h3 className="font-semibold">Por correo electrónico también puede contactarnos</h3>
+              <p className="text-gray-400 text-xs">Ayúdanos a saber tu problema o consulta.</p>
             </div>
             <button onClick={toggleChat} className="text-gray-400 hover:text-white">
               <X size={18} />
@@ -61,23 +84,26 @@ export default function ChatWidget() {
                 required
               />
             </div>
+
             <div>
-              <label htmlFor="fullName" className="block text-sm mb-1">Descripción</label>
-              <input
-                type="text"
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+              <label htmlFor="mensaje" className="block text-sm mb-1">Descripción</label>
+              <textarea
+                id="mensaje"
+                value={mensaje}
+                onChange={(e) => setMensaje(e.target.value)}
                 placeholder="Quiero un desbloqueo"
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
+                rows={3}
                 required
               />
             </div>
+
             <button 
               type="submit" 
               className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-blue-400 rounded transition-colors"
+              disabled={isSubmitting}
             >
-              Enviar
+              {isSubmitting ? 'Enviando...' : 'Enviar'}
             </button>
           </form>
         </div>

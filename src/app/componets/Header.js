@@ -60,7 +60,7 @@ export default function Header() {
                 width={52} 
                 height={52}
               />
-              CodeLab
+              TecnoCode
             </span>
           </Link>
         </div>
@@ -105,7 +105,7 @@ export default function Header() {
 
         {/* Icono externo (escritorio) */}
         <div className="hidden md:flex items-center">
-          <Link href="https://github.com/grafbase" className="flex items-center">
+          <Link href="https://github.com/fede-bustamantee" className="flex items-center">
             <Github size={24} />
           </Link>
         </div>
@@ -131,7 +131,7 @@ export default function Header() {
                 </Link>
               ))}
               <div className="flex items-center space-x-4 pt-2">
-                <Link href="https://github.com/grafbase" className="flex items-center">
+                <Link href="https://github.com/fede-bustamantee" className="flex items-center">
                   <Github size={20} />
                 </Link>
               </div>
