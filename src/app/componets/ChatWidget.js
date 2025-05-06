@@ -1,7 +1,11 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageSquare, X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+
+// Configuración de limite de envíos
+const COOLDOWN_TIME = 60; // Tiempo en segundos entre envíos permitidos
+const MAX_EMAILS_PER_DAY = 2; // Máximo de correos por día desde una misma IP/dispositivo
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,37 +13,123 @@ export default function ChatWidget() {
   const [fullName, setFullName] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  
+  // Verificar estado de limitación al cargar
+  useEffect(() => {
+    checkRateLimits();
+    
+    // Si hay un temporizador activo, actualizarlo cada segundo
+    if (timeRemaining > 0) {
+      const timer = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [timeRemaining]);
+  
+  // Función para verificar límites de envío
+  const checkRateLimits = () => {
+    // Verificar tiempo de espera
+    const lastSubmitTime = localStorage.getItem('lastEmailSubmit');
+    if (lastSubmitTime) {
+      const timeSinceLastSubmit = Math.floor((Date.now() - parseInt(lastSubmitTime)) / 1000);
+      if (timeSinceLastSubmit < COOLDOWN_TIME) {
+        setTimeRemaining(COOLDOWN_TIME - timeSinceLastSubmit);
+        return false;
+      }
+    }
+    
+    // Verificar límite diario
+    const today = new Date().toDateString();
+    const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
+    
+    // Limpiar historial antiguo (solo mantener el día actual)
+    const updatedHistory = {};
+    if (emailHistory[today]) {
+      updatedHistory[today] = emailHistory[today];
+    }
+    
+    // Verificar si se alcanzó el límite diario
+    if (updatedHistory[today] && updatedHistory[today] >= MAX_EMAILS_PER_DAY) {
+      setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
+      return false;
+    }
+    
+    return true;
+  };
+  
+  // Actualizar historial de envíos
+  const updateSubmitHistory = () => {
+    const today = new Date().toDateString();
+    const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
+    
+    if (!emailHistory[today]) {
+      emailHistory[today] = 0;
+    }
+    
+    emailHistory[today] += 1;
+    localStorage.setItem('emailSubmitHistory', JSON.stringify(emailHistory));
+    localStorage.setItem('lastEmailSubmit', Date.now().toString());
+    setTimeRemaining(COOLDOWN_TIME);
+  };
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      setError('');
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Verificar límites antes de enviar
+    if (!checkRateLimits()) {
+      if (!error) {
+        setError(`Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`);
+      }
+      return;
+    }
+    
     setIsSubmitting(true);
+    setError('');
     
     // Usa variables de entorno configuradas en tu plataforma de hosting
     emailjs.send(
-      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,    // Configurado en Netlify/Vercel
-      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,   // Configurado en Netlify/Vercel
+      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
       {
         name: fullName,
         email: email,
         message: mensaje,
       },
-      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY     // Configurado en Netlify/Vercel
+      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
     )
     .then(() => {
+      // Registrar envío exitoso para limitar la tasa
+      updateSubmitHistory();
+      
+      // Mostrar mensaje de éxito
       alert('¡Mensaje enviado con éxito!');
       setIsOpen(false);
       setEmail('');
       setFullName('');
       setMensaje('');
-      setIsSubmitting(false);
     })
     .catch((error) => {
       console.error('Error al enviar el mensaje:', error);
-      alert('Ocurrió un error al enviar el mensaje');
+      setError('Ocurrió un error al enviar el mensaje');
+    })
+    .finally(() => {
       setIsSubmitting(false);
     });
   };
@@ -59,6 +149,15 @@ export default function ChatWidget() {
           </div>
           
           <form onSubmit={handleSubmit} className="p-4 space-y-4">
+            {error && (
+              <div className="p-2 bg-red-900 bg-opacity-30 text-red-400 text-sm rounded">
+                {error}
+                {timeRemaining > 0 && (
+                  <span> ({timeRemaining}s)</span>
+                )}
+              </div>
+            )}
+            
             <div>
               <label htmlFor="email" className="block text-sm mb-1">Correo Electrónico</label>
               <input
@@ -100,10 +199,10 @@ export default function ChatWidget() {
 
             <button 
               type="submit" 
-              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-blue-400 rounded transition-colors"
-              disabled={isSubmitting}
+              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-blue-400 rounded transition-colors disabled:opacity-50"
+              disabled={isSubmitting || timeRemaining > 0}
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar'}
+              {isSubmitting ? 'Enviando...' : timeRemaining > 0 ? `Espera ${timeRemaining}s` : 'Enviar'}
             </button>
           </form>
         </div>
