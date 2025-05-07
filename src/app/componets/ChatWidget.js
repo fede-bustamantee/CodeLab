@@ -100,7 +100,7 @@ export default function ChatWidget() {
 
     if (!checkRateLimits()) {
       if (!error) {
-        setError(`Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`);
+        setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
       }
       return;
     }
