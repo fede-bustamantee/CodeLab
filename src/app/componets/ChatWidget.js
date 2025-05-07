@@ -2,11 +2,10 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
-import Swal from 'sweetalert2';
 
 // Configuración de limite de envíos
 const COOLDOWN_TIME = 30; // Tiempo en segundos entre envíos permitidos
-const MAX_EMAILS_PER_DAY = 3; // Máximo de correos por día desde una misma IP/dispositivo
+const MAX_EMAILS_PER_DAY = 4; // Máximo de correos por día desde una misma IP/dispositivo
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,12 +15,25 @@ export default function ChatWidget() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(0);
-  
-  // Verificar estado de limitación al cargar
+
+  // Componente de alerta reutilizable
+  const AlertMessage = ({ message, type = 'error', extra = null }) => {
+    const bgColors = {
+      error: 'bg-red-900 bg-opacity-30 text-red-400',
+      success: 'bg-green-900 bg-opacity-30 text-green-400',
+      warning: 'bg-yellow-900 bg-opacity-30 text-yellow-300',
+    };
+    return (
+      <div className={`p-2 text-sm rounded ${bgColors[type]}`}>
+        {message}
+        {extra && <span> {extra}</span>}
+      </div>
+    );
+  };
+
   useEffect(() => {
     checkRateLimits();
-    
-    // Si hay un temporizador activo, actualizarlo cada segundo
+
     if (timeRemaining > 0) {
       const timer = setInterval(() => {
         setTimeRemaining(prev => {
@@ -32,14 +44,12 @@ export default function ChatWidget() {
           return prev - 1;
         });
       }, 1000);
-      
+
       return () => clearInterval(timer);
     }
   }, [timeRemaining]);
-  
-  // Función para verificar límites de envío
+
   const checkRateLimits = () => {
-    // Verificar tiempo de espera
     const lastSubmitTime = localStorage.getItem('lastEmailSubmit');
     if (lastSubmitTime) {
       const timeSinceLastSubmit = Math.floor((Date.now() - parseInt(lastSubmitTime)) / 1000);
@@ -48,42 +58,31 @@ export default function ChatWidget() {
         return false;
       }
     }
-    
-    // Verificar límite diario
+
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
-    
-    // Limpiar historial antiguo (solo mantener el día actual)
+
     const updatedHistory = {};
     if (emailHistory[today]) {
       updatedHistory[today] = emailHistory[today];
     }
-    
-    // Verificar si se alcanzó el límite diario
+
     if (updatedHistory[today] && updatedHistory[today] >= MAX_EMAILS_PER_DAY) {
       setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
-      // Mostrar alerta SweetAlert2 para límite diario
-      Swal.fire({
-        icon: 'warning',
-        title: 'Límite alcanzado',
-        text: `Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`,
-        confirmButtonColor: '#3B82F6'
-      });
       return false;
     }
-    
+
     return true;
   };
-  
-  // Actualizar historial de envíos
+
   const updateSubmitHistory = () => {
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
-    
+
     if (!emailHistory[today]) {
       emailHistory[today] = 0;
     }
-    
+
     emailHistory[today] += 1;
     localStorage.setItem('emailSubmitHistory', JSON.stringify(emailHistory));
     localStorage.setItem('lastEmailSubmit', Date.now().toString());
@@ -99,38 +98,17 @@ export default function ChatWidget() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Verificar límites antes de enviar
+
     if (!checkRateLimits()) {
-      if (!error && timeRemaining > 0) {
+      if (!error) {
         setError(`Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`);
-        // Alerta para tiempo de espera
-        Swal.fire({
-          icon: 'info',
-          title: 'Espera un momento',
-          text: `Por favor espera ${timeRemaining} segundos antes de enviar otro mensaje.`,
-          timer: timeRemaining * 1000,
-          timerProgressBar: true,
-          confirmButtonColor: '#3B82F6'
-        });
       }
       return;
     }
-    
+
     setIsSubmitting(true);
     setError('');
-    
-    // Muestra spinner mientras se procesa
-    Swal.fire({
-      title: 'Enviando mensaje',
-      text: 'Por favor espera...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-    
-    // Usa variables de entorno configuradas en tu plataforma de hosting
+
     emailjs.send(
       process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
       process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
@@ -142,17 +120,8 @@ export default function ChatWidget() {
       process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
     )
     .then(() => {
-      // Registrar envío exitoso para limitar la tasa
       updateSubmitHistory();
-      
-      // Mostrar mensaje de éxito con SweetAlert2
-      Swal.fire({
-        icon: 'success',
-        title: '¡Mensaje enviado!',
-        text: 'Gracias por contactarnos. Te responderemos lo antes posible.',
-        confirmButtonColor: '#3B82F6'
-      });
-      
+      alert('¡Mensaje enviado con éxito!');
       setIsOpen(false);
       setEmail('');
       setFullName('');
@@ -160,15 +129,6 @@ export default function ChatWidget() {
     })
     .catch((error) => {
       console.error('Error al enviar el mensaje:', error);
-      
-      // Mostrar error con SweetAlert2
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ocurrió un problema al enviar tu mensaje. Por favor intenta de nuevo más tarde.',
-        confirmButtonColor: '#3B82F6'
-      });
-      
       setError('Ocurrió un error al enviar el mensaje');
     })
     .finally(() => {
@@ -189,17 +149,16 @@ export default function ChatWidget() {
               <X size={18} />
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="p-4 space-y-4">
             {error && (
-              <div className="p-2 bg-red-900 bg-opacity-30 text-red-400 text-sm rounded">
-                {error}
-                {timeRemaining > 0 && (
-                  <span> ({timeRemaining}s)</span>
-                )}
-              </div>
+              <AlertMessage 
+                message={error} 
+                type="error" 
+                extra={timeRemaining > 0 ? `(${timeRemaining}s)` : null} 
+              />
             )}
-            
+
             <div>
               <label htmlFor="email" className="block text-sm mb-1">Correo Electrónico</label>
               <input
@@ -212,7 +171,7 @@ export default function ChatWidget() {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="fullName" className="block text-sm mb-1">Nombre Completo</label>
               <input
