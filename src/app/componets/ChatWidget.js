@@ -98,13 +98,6 @@ export default function ChatWidget() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!checkRateLimits()) {
-      if (!error) {
-        setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
-      }
-      return;
-    }
-
     setIsSubmitting(true);
     setError('');
     setSuccess('');
