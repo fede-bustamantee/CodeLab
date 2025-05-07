@@ -18,7 +18,6 @@ export const tabContent = {
     items: [
       "3 meses en reparaciones generales",
       "6 meses en reemplazos de componentes",
-      "1 año en instalaciones completas",
       "Soporte técnico continuo post-servicio",
     ]
   },

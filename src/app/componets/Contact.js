@@ -15,9 +15,6 @@ const Contact = () => {
         </p>
 
         <div className="flex flex-wrap justify-center items-center gap-4 mb-8">
-          <div className="w-20 h-20 border-2 border-gray-700 border-dashed rounded-lg flex items-center justify-center">
-            <span className="text-3xl text-gray-700">+</span>
-          </div>
 
           {contact.map((extension, index) => (
             <a
@@ -25,18 +22,15 @@ const Contact = () => {
               href={extension.link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-20 h-20 rounded-lg flex flex-col items-center justify-center ${extension.bgColor || "bg-gray-900"} hover:scale-105 transition-transform`}
+              className={`w-20 h-20 rounded-lg border border-[#7e10c9] flex flex-col items-center justify-center ${extension.bgColor || "bg-gray-900"} hover:scale-105 transition-transform`}
             >
               <i className={`${extension.faIcon} text-2xl ${extension.iconColor || "text-white"} mb-1`} />
-              <div className="text-xs text-gray-400 text-center px-1">
+              <div className="text-xs text-white text-center px-1">
                 {extension.name}
               </div>
             </a>
           ))}
 
-          <div className="w-20 h-20 border-2 border-gray-700 border-dashed rounded-lg flex items-center justify-center">
-            <span className="text-3xl text-gray-700">+</span>
-          </div>
         </div>
 
         <a href="https://wa.me/3498417715" target="_blank" rel="noopener noreferrer">

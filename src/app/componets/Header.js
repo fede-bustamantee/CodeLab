@@ -60,7 +60,7 @@ export default function Header() {
                 width={52} 
                 height={52}
               />
-              TecnoCode
+              <p className='font-medium text-[#7e10c9]'>TecnoCode</p>
             </span>
           </Link>
         </div>
@@ -71,9 +71,9 @@ export default function Header() {
             <Link 
               key={i} 
               href={link.href} 
-              className={`hover:text-gray-400 transition ${
+              className={`hover:text-[#7e10c9] transition ${
                 activeSection === link.href.replace('#', '') 
-                  ? "text-blue-500 font-medium border-b-2 border-blue-500" 
+                  ? "text-[#7e10c9] font-medium border-b-2 border-[#7e10c9]" 
                   : ""
               }`}
             >
@@ -84,7 +84,7 @@ export default function Header() {
 
         {/* Botón de menú móvil */}
         <button 
-          className="md:hidden flex items-center" 
+          className="md:hidden flex items-center text-sky-500" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <svg 
@@ -104,7 +104,7 @@ export default function Header() {
         </button>
 
         {/* Icono externo (escritorio) */}
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center text-sky-500">
           <Link href="https://github.com/fede-bustamantee" className="flex items-center">
             <Github size={24} />
           </Link>
@@ -122,7 +122,7 @@ export default function Header() {
                   href={link.href} 
                   className={`py-1 hover:text-gray-400 transition ${
                     activeSection === link.href.replace('#', '') 
-                      ? "text-blue-500 font-medium pl-2 border-l-2 border-blue-500" 
+                      ? "text-sky-500 font-medium pl-2 border-l-2 border-sky-500" 
                       : ""
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
@@ -130,7 +130,7 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
-              <div className="flex items-center space-x-4 pt-2">
+              <div className="flex items-center space-x-4 pt-2 text-[#7e10c9]">
                 <Link href="https://github.com/fede-bustamantee" className="flex items-center">
                   <Github size={20} />
                 </Link>

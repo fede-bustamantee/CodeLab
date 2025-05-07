@@ -2,7 +2,7 @@ import './globals.css';
 import SplashScreen from './componets/LoadingScreen';
 
 export const metadata = {
-  title: 'Code Lab',
+  title: 'TecnoCode',
   description: 'App negocio tecnico',
 };
 

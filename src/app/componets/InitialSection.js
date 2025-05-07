@@ -16,10 +16,10 @@ export default function HeroSection() {
     </p>
     
     <div className="flex flex-row justify-center lg:justify-start space-x-3 mb-1 sm:mb-4">
-      <Link href="#services" className="px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-center">
+      <Link href="#services" className="px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-blue-600 text-white rounded-md hover:bg-blue-800 transition text-center">
         Conocer más
       </Link>
-      <Link href="#contact" className="px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base border border-gray-700 hover:bg-gray-800 rounded-md transition text-center">
+      <Link href="#contact" className="px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base border-2 border-[#7e10c9] hover:bg-[#7e10c9] rounded-md transition text-center">
         Contáctanos
       </Link>
     </div>

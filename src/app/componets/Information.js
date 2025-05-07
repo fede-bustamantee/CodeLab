@@ -24,7 +24,7 @@ export default function ServicioTecnicoInfo() {
           key={key}
           onClick={() => setActiveTab(key)}
           className={`py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2
-            ${activeTab === key ? "bg-gray-800 border border-gray-700" : "bg-gray-900 hover:bg-gray-800"}`}
+            ${activeTab === key ? "bg-[#7e10c9]" : "bg-gray-900 hover:bg-[#7e10c9]"}`}
         >
           <div className="w-6 h-6">
             {tabContent[key].icon ? cloneElement(tabContent[key].icon, { className: "w-full h-full" }) : null}
@@ -35,7 +35,7 @@ export default function ServicioTecnicoInfo() {
       </div>
 
       {/* Content Area */}
-      <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+      <div className="bg-gray-900 rounded-lg p-6 border border-[#7e10c9]">
         <div className="flex items-center gap-4 mb-4">
           <div className="p-4 bg-gray-800 rounded-full">
             {tabContent[activeTab].icon}

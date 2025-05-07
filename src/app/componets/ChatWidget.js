@@ -33,7 +33,6 @@ export default function ChatWidget() {
   };
 
   useEffect(() => {
-    // Check rate limits whenever the component mounts or the chat opens
     checkRateLimits();
 
     if (timeRemaining > 0) {
@@ -52,7 +51,6 @@ export default function ChatWidget() {
   }, [timeRemaining, isOpen]);
 
   const checkRateLimits = () => {
-    // Check cooldown timer
     const lastSubmitTime = localStorage.getItem('lastEmailSubmit');
     if (lastSubmitTime) {
       const timeSinceLastSubmit = Math.floor((Date.now() - parseInt(lastSubmitTime)) / 1000);
@@ -60,12 +58,8 @@ export default function ChatWidget() {
         setTimeRemaining(COOLDOWN_TIME - timeSinceLastSubmit);
       }
     }
-
-    // Check daily email limit
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
-    
-    // Clean up old entries (optional)
     const updatedHistory = {};
     for (const date in emailHistory) {
       if (date === today || new Date(date) >= new Date(today)) {
@@ -73,11 +67,11 @@ export default function ChatWidget() {
       }
     }
     localStorage.setItem('emailSubmitHistory', JSON.stringify(updatedHistory));
-    
+
     // Check today's count
     const todayCount = updatedHistory[today] || 0;
     setDailyEmailsLeft(MAX_EMAILS_PER_DAY - todayCount);
-    
+
     if (todayCount >= MAX_EMAILS_PER_DAY) {
       setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
       return false;
@@ -89,19 +83,16 @@ export default function ChatWidget() {
   const updateSubmitHistory = () => {
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
-
-    // Update today's count
     emailHistory[today] = (emailHistory[today] || 0) + 1;
-    
+
     localStorage.setItem('emailSubmitHistory', JSON.stringify(emailHistory));
     localStorage.setItem('lastEmailSubmit', Date.now().toString());
-    
+
     setTimeRemaining(COOLDOWN_TIME);
     setDailyEmailsLeft(prev => Math.max(0, prev - 1));
   };
 
   const toggleChat = () => {
-    // If opening the chat, check limits again
     if (!isOpen) {
       checkRateLimits();
     }
@@ -113,7 +104,6 @@ export default function ChatWidget() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Check if user can submit again
     if (!checkRateLimits()) {
       return;
     }
@@ -132,34 +122,34 @@ export default function ChatWidget() {
       },
       process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
     )
-    .then(() => {
-      updateSubmitHistory();
-      setSuccess('¡Mensaje enviado con éxito!');
-      setEmail('');
-      setFullName('');
-      setMensaje('');
-    })
-    .catch((error) => {
-      console.error('Error al enviar el mensaje:', error);
-      setError('Ocurrió un error al enviar el mensaje.');
-    })
-    .finally(() => {
-      setIsSubmitting(false);
-    });
+      .then(() => {
+        updateSubmitHistory();
+        setSuccess('¡Mensaje enviado con éxito!');
+        setEmail('');
+        setFullName('');
+        setMensaje('');
+      })
+      .catch((error) => {
+        console.error('Error al enviar el mensaje:', error);
+        setError('Ocurrió un error al enviar el mensaje.');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   return (
     <div className="fixed bottom-4 right-5 z-50">
       {isOpen ? (
-        <div className="bg-black rounded-md shadow-lg w-80 text-white border border-gray-700">
+        <div className="bg-black rounded-md shadow-lg w-80 text-white border-2 border-[#7e10c9]">
           <div className="flex justify-between items-center p-4 border-b border-gray-700">
             <div className="text-sm">
-              <h3 className="font-semibold">Por correo electrónico también puede contactarnos</h3>
+              <h3 className="font-semibold">Contáctanos ahora</h3>
               <p className="text-gray-400 text-xs">Ayúdanos a saber tu problema o consulta.</p>
               {dailyEmailsLeft < MAX_EMAILS_PER_DAY && (
                 <p className="text-xs text-yellow-300 mt-1">
-                  {dailyEmailsLeft > 0 
-                    ? `Te quedan ${dailyEmailsLeft} mensaje(s) hoy` 
+                  {dailyEmailsLeft > 0
+                    ? `Te quedan ${dailyEmailsLeft} mensaje(s) hoy`
                     : 'Has alcanzado el límite diario'}
                 </p>
               )}
@@ -174,13 +164,13 @@ export default function ChatWidget() {
             {success && <AlertMessage message={success} type="success" />}
 
             <div>
-              <label htmlFor="email" className="block text-sm mb-1">Correo Electrónico</label>
+              <label htmlFor="email" className="block text-sm mb-1">Tú Correo Electrónico</label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@example.com"
+                placeholder="marcos@gmail.com"
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 required
                 disabled={dailyEmailsLeft <= 0}
@@ -202,12 +192,12 @@ export default function ChatWidget() {
             </div>
 
             <div>
-              <label htmlFor="mensaje" className="block text-sm mb-1">Descripción</label>
+              <label htmlFor="mensaje" className="block text-sm mb-1">Descripción y teléfono (opcional)</label>
               <textarea
                 id="mensaje"
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Quiero un desbloqueo"
+                placeholder="Quiero un desbloqueo de mi notebook"
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 rows={3}
                 required
@@ -215,25 +205,25 @@ export default function ChatWidget() {
               />
             </div>
 
-            <button 
-              type="submit" 
-              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-blue-400 rounded transition-colors disabled:opacity-50"
+            <button
+              type="submit"
+              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors disabled:opacity-50"
               disabled={isSubmitting || timeRemaining > 0 || dailyEmailsLeft <= 0}
             >
-              {isSubmitting 
-                ? 'Enviando...' 
-                : timeRemaining > 0 
-                  ? `Espera ${timeRemaining}s` 
-                  : dailyEmailsLeft <= 0 
-                    ? 'Límite alcanzado' 
+              {isSubmitting
+                ? 'Enviando...'
+                : timeRemaining > 0
+                  ? `Espera ${timeRemaining}s`
+                  : dailyEmailsLeft <= 0
+                    ? 'Límite alcanzado'
                     : 'Enviar'}
             </button>
           </form>
         </div>
       ) : (
-        <button 
+        <button
           onClick={toggleChat}
-          className="bg-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+          className="bg-[#7e10c9] p-3 rounded-full shadow-lg hover:bg-white transition-colors"
         >
           <MessageSquare size={24} className="text-black" />
         </button>

@@ -14,7 +14,7 @@ const Services = () => {
           {services.map((service) => (
             <div
               key={service.id}
-              className="bg-gray-900 rounded-2xl p-6 flex flex-col items-center text-center"
+              className="bg-gray-900 border border-[#7e10c9] rounded-2xl p-6 flex flex-col items-center text-center"
             >
               {service.image && (
                 <div className="mb-4">
