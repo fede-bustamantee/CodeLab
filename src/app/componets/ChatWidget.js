@@ -15,6 +15,7 @@ export default function ChatWidget() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [dailyEmailsLeft, setDailyEmailsLeft] = useState(MAX_EMAILS_PER_DAY);
 
   const AlertMessage = ({ message, type = 'error', extra = null }) => {
     const baseStyle = 'text-sm font-semibold p-2 rounded';
@@ -32,6 +33,7 @@ export default function ChatWidget() {
   };
 
   useEffect(() => {
+    // Check rate limits whenever the component mounts or the chat opens
     checkRateLimits();
 
     if (timeRemaining > 0) {
@@ -47,27 +49,36 @@ export default function ChatWidget() {
 
       return () => clearInterval(timer);
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, isOpen]);
 
   const checkRateLimits = () => {
+    // Check cooldown timer
     const lastSubmitTime = localStorage.getItem('lastEmailSubmit');
     if (lastSubmitTime) {
       const timeSinceLastSubmit = Math.floor((Date.now() - parseInt(lastSubmitTime)) / 1000);
       if (timeSinceLastSubmit < COOLDOWN_TIME) {
         setTimeRemaining(COOLDOWN_TIME - timeSinceLastSubmit);
-        return false;
       }
     }
 
+    // Check daily email limit
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
+    
+    // Clean up old entries (optional)
     const updatedHistory = {};
-
-    if (emailHistory[today]) {
-      updatedHistory[today] = emailHistory[today];
+    for (const date in emailHistory) {
+      if (date === today || new Date(date) >= new Date(today)) {
+        updatedHistory[date] = emailHistory[date];
+      }
     }
-
-    if (updatedHistory[today] && updatedHistory[today] >= MAX_EMAILS_PER_DAY) {
+    localStorage.setItem('emailSubmitHistory', JSON.stringify(updatedHistory));
+    
+    // Check today's count
+    const todayCount = updatedHistory[today] || 0;
+    setDailyEmailsLeft(MAX_EMAILS_PER_DAY - todayCount);
+    
+    if (todayCount >= MAX_EMAILS_PER_DAY) {
       setError(`Has alcanzado el límite de ${MAX_EMAILS_PER_DAY} mensajes por día. Inténtalo mañana.`);
       return false;
     }
@@ -79,17 +90,21 @@ export default function ChatWidget() {
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
 
-    if (!emailHistory[today]) {
-      emailHistory[today] = 0;
-    }
-
-    emailHistory[today] += 1;
+    // Update today's count
+    emailHistory[today] = (emailHistory[today] || 0) + 1;
+    
     localStorage.setItem('emailSubmitHistory', JSON.stringify(emailHistory));
     localStorage.setItem('lastEmailSubmit', Date.now().toString());
+    
     setTimeRemaining(COOLDOWN_TIME);
+    setDailyEmailsLeft(prev => Math.max(0, prev - 1));
   };
 
   const toggleChat = () => {
+    // If opening the chat, check limits again
+    if (!isOpen) {
+      checkRateLimits();
+    }
     setIsOpen(!isOpen);
     setError('');
     setSuccess('');
@@ -97,6 +112,11 @@ export default function ChatWidget() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check if user can submit again
+    if (!checkRateLimits()) {
+      return;
+    }
 
     setIsSubmitting(true);
     setError('');
@@ -136,6 +156,13 @@ export default function ChatWidget() {
             <div className="text-sm">
               <h3 className="font-semibold">Por correo electrónico también puede contactarnos</h3>
               <p className="text-gray-400 text-xs">Ayúdanos a saber tu problema o consulta.</p>
+              {dailyEmailsLeft < MAX_EMAILS_PER_DAY && (
+                <p className="text-xs text-yellow-300 mt-1">
+                  {dailyEmailsLeft > 0 
+                    ? `Te quedan ${dailyEmailsLeft} mensaje(s) hoy` 
+                    : 'Has alcanzado el límite diario'}
+                </p>
+              )}
             </div>
             <button onClick={toggleChat} className="text-gray-400 hover:text-white">
               <X size={18} />
@@ -156,6 +183,7 @@ export default function ChatWidget() {
                 placeholder="email@example.com"
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 required
+                disabled={dailyEmailsLeft <= 0}
               />
             </div>
 
@@ -169,6 +197,7 @@ export default function ChatWidget() {
                 placeholder="Marcos Ruiz"
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 required
+                disabled={dailyEmailsLeft <= 0}
               />
             </div>
 
@@ -182,15 +211,22 @@ export default function ChatWidget() {
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 rows={3}
                 required
+                disabled={dailyEmailsLeft <= 0}
               />
             </div>
 
             <button 
               type="submit" 
               className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-blue-400 rounded transition-colors disabled:opacity-50"
-              disabled={isSubmitting || timeRemaining > 0}
+              disabled={isSubmitting || timeRemaining > 0 || dailyEmailsLeft <= 0}
             >
-              {isSubmitting ? 'Enviando...' : timeRemaining > 0 ? `Espera ${timeRemaining}s` : 'Enviar'}
+              {isSubmitting 
+                ? 'Enviando...' 
+                : timeRemaining > 0 
+                  ? `Espera ${timeRemaining}s` 
+                  : dailyEmailsLeft <= 0 
+                    ? 'Límite alcanzado' 
+                    : 'Enviar'}
             </button>
           </form>
         </div>
