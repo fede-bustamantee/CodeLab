@@ -3,9 +3,8 @@ import { useState, useEffect } from 'react';
 import { MessageSquare, X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
-// Configuración de limite de envíos
-const COOLDOWN_TIME = 30; // Tiempo en segundos entre envíos permitidos
-const MAX_EMAILS_PER_DAY = 4; // Máximo de correos por día desde una misma IP/dispositivo
+const COOLDOWN_TIME = 30;
+const MAX_EMAILS_PER_DAY = 2;
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,17 +13,18 @@ export default function ChatWidget() {
   const [mensaje, setMensaje] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(0);
 
-  // Componente de alerta reutilizable
   const AlertMessage = ({ message, type = 'error', extra = null }) => {
+    const baseStyle = 'text-sm font-semibold p-2 rounded';
     const bgColors = {
       error: 'bg-red-900 bg-opacity-30 text-red-400',
       success: 'bg-green-900 bg-opacity-30 text-green-400',
       warning: 'bg-yellow-900 bg-opacity-30 text-yellow-300',
     };
     return (
-      <div className={`p-2 text-sm rounded ${bgColors[type]}`}>
+      <div className={`${baseStyle} ${bgColors[type]}`}>
         {message}
         {extra && <span> {extra}</span>}
       </div>
@@ -61,8 +61,8 @@ export default function ChatWidget() {
 
     const today = new Date().toDateString();
     const emailHistory = JSON.parse(localStorage.getItem('emailSubmitHistory') || '{}');
-
     const updatedHistory = {};
+
     if (emailHistory[today]) {
       updatedHistory[today] = emailHistory[today];
     }
@@ -91,9 +91,8 @@ export default function ChatWidget() {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) {
-      setError('');
-    }
+    setError('');
+    setSuccess('');
   };
 
   const handleSubmit = (e) => {
@@ -108,6 +107,7 @@ export default function ChatWidget() {
 
     setIsSubmitting(true);
     setError('');
+    setSuccess('');
 
     emailjs.send(
       process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
@@ -121,15 +121,14 @@ export default function ChatWidget() {
     )
     .then(() => {
       updateSubmitHistory();
-      alert('¡Mensaje enviado con éxito!');
-      setIsOpen(false);
+      setSuccess('¡Mensaje enviado con éxito!');
       setEmail('');
       setFullName('');
       setMensaje('');
     })
     .catch((error) => {
       console.error('Error al enviar el mensaje:', error);
-      setError('Ocurrió un error al enviar el mensaje');
+      setError('Ocurrió un error al enviar el mensaje.');
     })
     .finally(() => {
       setIsSubmitting(false);
@@ -151,13 +150,8 @@ export default function ChatWidget() {
           </div>
 
           <form onSubmit={handleSubmit} className="p-4 space-y-4">
-            {error && (
-              <AlertMessage 
-                message={error} 
-                type="error" 
-                extra={timeRemaining > 0 ? `(${timeRemaining}s)` : null} 
-              />
-            )}
+            {error && <AlertMessage message={error} type="error" extra={timeRemaining > 0 ? `(${timeRemaining}s)` : null} />}
+            {success && <AlertMessage message={success} type="success" />}
 
             <div>
               <label htmlFor="email" className="block text-sm mb-1">Correo Electrónico</label>
