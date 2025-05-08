@@ -33,7 +33,7 @@ const Contact = () => {
 
         </div>
 
-        <a href="https://wa.me/3498417715" target="_blank" rel="noopener noreferrer">
+        <a href="https://wa.me/3498436818" target="_blank" rel="noopener noreferrer">
           <div className="mt-8 bg-gradient-to-r from-blue-900 to-purple-900 p-6 rounded-lg hover:opacity-90 transition-opacity">
             <div className="text-center">
               <h3 className="text-xl font-bold mb-2">¿Necesitas ayuda con tu equipo?</h3>
