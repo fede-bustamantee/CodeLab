@@ -4,7 +4,7 @@ export const tabContent = {
   cobertura: {
     title: "Zona de Cobertura",
     icon: <MapPin className="w-8 h-8 text-blue-400" />,
-    description: "Servicio técnico disponible",
+    description: "Servicio técnico disponible en Vera y Pintado, Santa Fe",
     items: [
       "Gobernador Crespo y Alrededores",
       "San Justo y Alrededores",
@@ -27,7 +27,7 @@ export const tabContent = {
     description: "Contamos con las certificaciones o títulos",
     items: [
       "Técnico Superior en Desarrollo de Software",
-      "Tecnico Superior en Infraestructura"
+      "Técnico en Reparación y Diagnósticos"
     ]
   }
 };
