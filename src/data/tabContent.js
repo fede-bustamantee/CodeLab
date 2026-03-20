@@ -17,7 +17,7 @@ export const tabContent = {
     description: "Ofrecemos garantías para todos nuestros servicios.",
     items: [
       "3 meses en reparaciones generales",
-      "6 meses en reemplazos de componentes",
+      "3 meses en reemplazos de componentes",
       "Soporte técnico continuo post-servicio",
     ]
   },

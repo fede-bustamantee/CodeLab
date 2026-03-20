@@ -2,7 +2,7 @@ export const contact = [
   {
     name: "WhatsApp",
     faIcon: "fab fa-whatsapp",
-    link: "https://wa.me/3498436818",
+    link: "https://wa.me/3498404056",
     bgColor: "bg-transparent",
     iconColor: "text-[#25D366]"
   },

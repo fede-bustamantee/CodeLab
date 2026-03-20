@@ -197,7 +197,7 @@ export default function ChatWidget() {
                 id="mensaje"
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Quiero un desbloqueo de mi notebook"
+                placeholder="Necesito Informacion de..."
                 className="w-full p-2 bg-gray-800 text-white rounded border border-gray-700"
                 rows={3}
                 required
