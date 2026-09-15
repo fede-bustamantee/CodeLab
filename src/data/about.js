@@ -1,7 +1,7 @@
 const aboutContent = {
     titulo: "Soporte Técnico y Desarrollo a medida.",
     descripcion:
-        "Soluciones en programación, reparación de dispositivos, desbloqueos y soporte técnico, combinando tecnología y eficiencia para satisfacer todas tus necesidades digitales.",
+        "Soluciones en programación y soporte técnico, combinando tecnología y eficiencia.",
     subdescripcion: "Siempre adaptándonos a tus necesidades",
     experiencia:"Técnico Certificado",
 };

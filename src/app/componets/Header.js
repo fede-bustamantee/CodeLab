@@ -55,12 +55,11 @@ export default function Header() {
           <Link href="/">
             <span className="text-xl flex items-center">
               <Image 
-                src="/logo.png"
+                src="/logoheader.png"
                 alt="CodeLab Logo" 
                 width={52} 
                 height={52}
               />
-              <p className='font-medium text-[#7e10c9]'>TecnoCode</p>
             </span>
           </Link>
         </div>
