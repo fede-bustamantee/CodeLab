@@ -11,9 +11,9 @@ export default function HeroSection() {
       {aboutContent.titulo}
     </h1>
     
-    <p className="text-xl mb-3 sm:mb-6 text-gray-400">
+    {/* <p className="text-xl mb-3 sm:mb-6 text-gray-400">
       {aboutContent.descripcion}
-    </p>
+    </p> */}
     
     <div className="flex flex-row justify-center lg:justify-start space-x-3 mb-1 sm:mb-4">
       <Link href="#services" className="px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-blue-600 text-white rounded-md hover:bg-blue-800 transition text-center">
