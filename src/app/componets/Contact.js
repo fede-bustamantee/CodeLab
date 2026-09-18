@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Contact = () => {
   return (
-    <div id='contact' className="w-full bg-black text-white py-10 px-4">
+    <div id='contact' className="w-full bg-mist-900 text-white py-5 px-4">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4 tracking-[-0.04em]">
           Contactanos ahora mismo y contanos tu problema

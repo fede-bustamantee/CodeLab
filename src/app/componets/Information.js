@@ -8,9 +8,9 @@ export default function ServicioTecnicoInfo() {
   const [activeTab, setActiveTab] = useState("cobertura");
 
   return (
-    <div id="information" className="bg-black text-white w-full mx-auto pt-0 px-5 lg:px-25">
+    <div id="information" className="bg-black text-white w-full mx-auto pt-8 py-6 px-5 lg:px-25">
       <div className="mb-4 text-center">
-        <h2 className="text-3xl font-extrabold mb-2 tracking-[-0.04em]">Servicio Técnico Profesional</h2>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-[-0.04em]">Servicio Profesional</h2>
         <div className="flex items-center justify-center gap-2">
           <CheckCircle className="w-5 h-5 text-green-400" />
           <p className="text-lg text-gray-300">{aboutContext.experiencia}</p>

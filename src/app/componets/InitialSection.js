@@ -5,9 +5,9 @@ import aboutContent from "@/data/about";
 export default function HeroSection() {
   return (
 <div id='initial' className="flex flex-col lg:flex-row items-center justify-between pt-20 bg-black mx-auto px-4 sm:px-6 md:px-8 lg:px-20">
-<div className="lg:w-1/2 mb-6 lg:mb-2 text-center lg:text-left">
+<div className="lg:w-1/2 lg:mb-2 text-center lg:text-left">
     
-    <h1 className="text-4xl md:text-6xl font-extrabold mb-2 tracking-[-0.04em]">
+    <h1 className="text-4xl md:text-6xl font-extrabold mb-2 tracking-[-0.06em]">
       {aboutContent.titulo}
     </h1>
     
@@ -29,7 +29,7 @@ export default function HeroSection() {
     </p>
   </div>
 
-  <div className="mb-4 sm:mb-8 py-1 sm:py-2 transform -translate-y-4 sm:translate-y-0">
+  <div className="hidden sm:block mb-4 sm:mb-8 py-1 sm:py-2 transform -translate-y-4 sm:translate-y-0">
   <div className="relative bg-black rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
       <Image
         src="/fondoo.png"
@@ -38,7 +38,7 @@ export default function HeroSection() {
         height={0}
         priority
       />
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
+      <div className=" absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
       <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-blue-900/10 to-transparent"></div>
     </div>
   </div>

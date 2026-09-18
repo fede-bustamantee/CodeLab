@@ -15,10 +15,9 @@ export default function Home() {
       <Header/>
       <InitialSection/>
       <Carousel/>
-
       <ChatWidget />
       <Brands/>
-      <Services/>
+      {/* <Services/> */}
       <Information/>
       <Contact/>
     </>
